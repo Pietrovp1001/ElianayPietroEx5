@@ -2,31 +2,30 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+
+//Trabajo hecho por Pietro Villano y Eliana Giraldo
+
 namespace OrdenaNumeros
 {
     public partial class Form1 : Form
     {
-        //Atributos propios del juego
-        private int[,] matrizValores;
-        private Button[,] matrizBotones;
-        private int posicionFila, posicionColumna;
+
+        private Logica MiLogica;
+        public Button[,] matrizBotones;
+
 
         /// <summary>
         /// Constructor de la clase Form1
         /// </summary>
         public Form1()
         {
+
+            MiLogica = new Logica();
             InitializeComponent();
-
-            posicionFila = 0;
-            posicionColumna = 0;
-
             matrizBotones = new Button[4, 4];
-            matrizValores = new int[4, 4];
-
-            //Aqui se invocan los metodos que inicializan las matrices
             InicializaMatrizBotones();
-            InicializaMatrizValores();
+            MiLogica.InicializaMatrizValores();
+            MiLogica.EvaluaCondicionVictoria();
         }
 
         /// <summary>
@@ -65,51 +64,13 @@ namespace OrdenaNumeros
         }
 
         /// <summary>
-        /// Inicializa la matriz de valores, asignando los numeros a organizar
-        /// </summary>
-        private void InicializaMatrizValores()
-        {
-            int valor = 0;
-
-            //Inicialmente se asignan los números del 0 al 15 en toda la matriz
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    matrizValores[i, j] = valor;
-                    valor++;
-                }
-            }
-
-            //Luego, procedemos a cambiar los valores de posición de manera aleatoria
-
-            Random aleatorio = new Random();
-            int posicionHorizontal, posicionVertical, valorTemporal;
-
-            //Aqui desordenamos la matriz, calculando posiciones horizontales y
-            //verticales dentro de la matriz
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    valorTemporal = matrizValores[i, j];
-                    posicionHorizontal = aleatorio.Next(4);
-                    posicionVertical = aleatorio.Next(4);
-
-                    matrizValores[i, j] = matrizValores[posicionHorizontal, posicionVertical];
-                    matrizValores[posicionHorizontal, posicionVertical] = valorTemporal;
-                }
-            }
-        }
-
-        /// <summary>
         /// Asigna los valores de la matrizValores como etiquetas de los
         /// botones en la matrizBotones
         /// </summary>
         private void InicializaEtiquetaBotones()
         {
             //Recalculamos la matriz de valores
-            InicializaMatrizValores();
+            MiLogica.InicializaMatrizValores();
 
             for (int i = 0; i < 4; i++)
             {
@@ -117,10 +78,10 @@ namespace OrdenaNumeros
                 {
                     //El botón que tenga el valor 0, se verá como vacío
                     //para que el usuario pueda "desplazar" el valor allí
-                    if (matrizValores[i, j] == 0)
+                    if (MiLogica.matrizValores[i, j] == 0)
                         matrizBotones[i, j].Text = "";
                     else
-                        matrizBotones[i, j].Text = matrizValores[i, j].ToString();
+                        matrizBotones[i, j].Text = MiLogica.matrizValores[i, j].ToString();
                 }
             }
         }
@@ -231,6 +192,10 @@ namespace OrdenaNumeros
             Application.Exit();
         }
 
+
+
+
+
         /// <summary>
         /// Evalua información asociada al botón presionado
         /// </summary>
@@ -239,8 +204,8 @@ namespace OrdenaNumeros
         /// <param name="datoColumna">Columna en la matriz a la que pertenece el botón</param>
         private void EvaluaBotonPresionado(int numeroBoton, int datoFila, int datoColumna)
         {
-            posicionFila = datoFila;
-            posicionColumna = datoColumna;
+            MiLogica.posicionFila = datoFila;
+            MiLogica.posicionColumna = datoColumna;
 
             //Aqui evaluamos en la matrizValores, la posición correspondiente al botón presionado
             EvaluaPosicion();
@@ -252,51 +217,51 @@ namespace OrdenaNumeros
         /// <summary>
         /// Evalua si la posición presionada está adjacente al espacio disponible para usar
         /// </summary>
-        private void EvaluaPosicion()
+        public void EvaluaPosicion()
         {
             int valorTemporal = 0;
 
             //Validamos el valor superior a donde presionamos si está el cero
-            if (posicionFila > 0)
+            if (MiLogica.posicionFila > 0)
             {
-                if (matrizValores[posicionFila - 1, posicionColumna] == 0)
+                if (MiLogica.matrizValores[MiLogica.posicionFila - 1, MiLogica.posicionColumna] == 0)
                 {
-                    valorTemporal = matrizValores[posicionFila, posicionColumna];
-                    matrizValores[posicionFila, posicionColumna] = 0;
-                    matrizValores[posicionFila - 1, posicionColumna] = valorTemporal;
+                    valorTemporal = MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna];
+                    MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna] = 0;
+                    MiLogica.matrizValores[MiLogica.posicionFila - 1, MiLogica.posicionColumna] = valorTemporal;
                 }
             }
 
             //Validamos el valor inferior a donde presionamos si está el cero
-            if (posicionFila < 3)
+            if (MiLogica.posicionFila < 3)
             {
-                if (matrizValores[posicionFila + 1, posicionColumna] == 0)
+                if (MiLogica.matrizValores[MiLogica.posicionFila + 1, MiLogica.posicionColumna] == 0)
                 {
-                    valorTemporal = matrizValores[posicionFila, posicionColumna];
-                    matrizValores[posicionFila, posicionColumna] = 0;
-                    matrizValores[posicionFila + 1, posicionColumna] = valorTemporal;
+                    valorTemporal = MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna];
+                    MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna] = 0;
+                    MiLogica.matrizValores[MiLogica.posicionFila + 1, MiLogica.posicionColumna] = valorTemporal;
                 }
             }
 
             //Validamos el valor izquierdo a donde presionamos si está el cero
-            if (posicionColumna > 0)
+            if (MiLogica.posicionColumna > 0)
             {
-                if (matrizValores[posicionFila, posicionColumna - 1] == 0)
+                if (MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna - 1] == 0)
                 {
-                    valorTemporal = matrizValores[posicionFila, posicionColumna];
-                    matrizValores[posicionFila, posicionColumna] = 0;
-                    matrizValores[posicionFila, posicionColumna - 1] = valorTemporal;
+                    valorTemporal = MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna];
+                    MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna] = 0;
+                    MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna - 1] = valorTemporal;
                 }
             }
 
             //Validamos el valor derecho a donde presionamos si está el cero
-            if (posicionColumna < 3)
+            if (MiLogica.posicionColumna < 3)
             {
-                if (matrizValores[posicionFila, posicionColumna + 1] == 0)
+                if (MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna + 1] == 0)
                 {
-                    valorTemporal = matrizValores[posicionFila, posicionColumna];
-                    matrizValores[posicionFila, posicionColumna] = 0;
-                    matrizValores[posicionFila, posicionColumna + 1] = valorTemporal;
+                    valorTemporal = MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna];
+                    MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna] = 0;
+                    MiLogica.matrizValores[MiLogica.posicionFila, MiLogica.posicionColumna + 1] = valorTemporal;
                 }
             }
 
@@ -305,59 +270,55 @@ namespace OrdenaNumeros
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (matrizValores[i, j] == 0)
+                    if (MiLogica.matrizValores[i, j] == 0)
                         matrizBotones[i, j].Text = "";
                     else
-                        matrizBotones[i, j].Text = matrizValores[i, j].ToString();
+                        matrizBotones[i, j].Text = MiLogica.matrizValores[i, j].ToString();
                 }
             }
 
             //Y valoramos la condición de victoria
-            EvaluaCondicionVictoria();
+            MiLogica.EvaluaCondicionVictoria();
         }
 
+        public void NotificaPosicionCorrectaValor()
+        {
+
+            int[,] valoresEsperados = new int[4, 4];
+            int valor = 1;
+
+            int totalFilas = valoresEsperados.GetLength(0);
+            int totalColumnas = valoresEsperados.GetLength(1);
+
+            //Aqui llenamos la matriz de los valores esperados
+            for (int i = 0; i < totalFilas; i++)
+                for (int j = 0; j < totalColumnas; j++)
+                {
+                    valoresEsperados[i, j] = valor;
+                    valor++;
+                }
+
+            //Al finalizar el juego, en la posición 4,4 se encuentra el 0
+            valoresEsperados[3, 3] = 0;
+
+            //Ahora comparamos con los valores actuales para saber si están en la posición correcta
+            for (int i = 0; i < totalFilas; i++)
+                for (int j = 0; j < totalColumnas; j++)
+                {
+                    if (MiLogica.matrizValores[i, j] == valoresEsperados[i, j])
+                        matrizBotones[i, j].BackColor = Color.LightGreen;
+                    else
+                        matrizBotones[i, j].BackColor = Color.LightGray;
+
+                    //El botón que tiene el 0 no deberá cambiar de color
+                    if (MiLogica.matrizValores[i, j] == 0)
+                        matrizBotones[i, j].BackColor = Color.LightGray;
+                }
+        }
         /// <summary>
         /// Esta función valida si todos los números están organizados
         /// </summary>
-        private void EvaluaCondicionVictoria()
-        {
-            //Partimos del supuesto que ya logramos la condición de victoria
-            bool condicionVictoria = true;
 
-            int valorBuscado = 0;
-
-            //Aqui recorremos la matriz de valores buscando para cada posición si el valor está en orden
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    //incrementamos el valor buscado
-                    valorBuscado++;
-
-                    //Si los valores son diferentes, entonces todavía necesitamos seguir jugando!!!
-                    if (matrizValores[i, j] != valorBuscado)
-                    {
-                        // Validamos si estamos en la última casilla, el valor existente es 0,
-                        // el valor buscado ya llegó a 16 y la condición de victoria sigue siendo true
-                        if (matrizValores[i, j] == 0 && valorBuscado == 16 && condicionVictoria == true)
-                            condicionVictoria = true;
-
-                        // De lo contrario, es porque estamos en cualquier otra casilla y los valores
-                        // Todavía no son iguales
-                        else
-                            condicionVictoria = false;
-                    }
-                }
-            }
-
-
-            //Si la condición de victoria se logró, mostramos el mensaje de Victoria y desactivamos los botones
-            if (condicionVictoria == true)
-            {
-                MessageBox.Show("Todos los números organizados, Felicitaciones!", "Victoria Alcanzada!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                InactivaBotones();
-            }
-        }
 
         /// <summary>
         /// Esta función inactiva los botones para ser utilizados en el juego
@@ -382,41 +343,6 @@ namespace OrdenaNumeros
         /// <summary>
         /// Notifica que el número se encuentra en la posición correcta, cambiando el color de fondo del botón
         /// </summary>
-        private void NotificaPosicionCorrectaValor()
-        {
-
-            int[,] valoresEsperados = new int[4, 4];
-            int valor = 1;
-
-            int totalFilas = valoresEsperados.GetLength(0);
-            int totalColumnas = valoresEsperados.GetLength(1);
-
-            //Aqui llenamos la matriz de los valores esperados
-            for (int i = 0; i < totalFilas; i++)
-                for (int j = 0; j < totalColumnas; j++)
-                {
-                    valoresEsperados[i, j] = valor;
-                    valor++;
-                }
-
-            //Al finalizar el juego, en la posición 4,4 se encuentra el 0
-            valoresEsperados[3, 3] = 0;
-
-            //Ahora comparamos con los valores actuales para saber si están en la posición correcta
-            for (int i = 0; i < totalFilas; i++)
-                for (int j = 0; j < totalColumnas; j++)
-                {
-                    if (matrizValores[i, j] == valoresEsperados[i, j])
-                        matrizBotones[i, j].BackColor = Color.LightGreen;
-                    else
-                        matrizBotones[i, j].BackColor = Color.LightGray;
-
-                    //El botón que tiene el 0 no deberá cambiar de color
-                    if(matrizValores[i, j]==0)
-                        matrizBotones[i, j].BackColor = Color.LightGray;
-                }
-        }
-
         /// <summary>
         /// Método que inicializa el fondo de los botones con un color gris claro
         /// </summary>
