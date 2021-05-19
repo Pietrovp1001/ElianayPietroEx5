@@ -354,7 +354,18 @@ namespace OrdenaNumeros
             //Asignamos a todos los botones gris claro como color de fondo
             for (int i = 0; i < totalFilas; i++)
                 for (int j = 0; j < totalColumnas; j++)
-                    matrizBotones[i, j].BackColor = Color.LightGray;
+                    matrizBotones[i, j].BackColor = Color.LightGray
         }
     }
+    public bool ElCeroEstaAqui(int datoFila, int datoColumna)
+    {​​​​​​
+            bool siEsta = false;
+
+        if (matrizValores[datoFila, datoColumna] == 0)
+
+            siEsta = true;
+
+        return siEsta;
+    }​​​​​​
+
 }
